@@ -4,3 +4,5 @@
 # and randomly select a word between 5 and 12 characters long for the secret word.
 
 require_relative "lib/game"
+
+Game.new.start
