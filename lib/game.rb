@@ -71,19 +71,40 @@ class Game
     puts stages[@guesses]
   end
 
+  def display_lives
+    full = ("♥ " * (6 - @guesses)).red
+    empty = ("♡ " * @guesses).light_black
+
+    return "Lives        #{full}#{empty}"
+  end
+
+  def game_ui
+
+    puts <<~UI
+    ╔═══════════════════════════════════════════════╗
+    ║                  HANGMAN                      ║
+    ╠═══════════════════════════════════════════════╣
+    ║ #{display_lives.ljust(20)}                     ║
+    ║ Wrong letters #{@wrong_letters.join(' ').ljust(20)}            ║
+    ║ Save          $                               ║
+    ║ Quit          !                               ║
+    ╚═══════════════════════════════════════════════╝
+    UI
+  end
+
   def start
-   
+    game_ui
     display_hangedman
     display_word
 
     while @guesses < 6
-      puts "Type any letter to make a guess\n'$' to save the game or !' to quit \n"
+      puts "Type any letter to make a guess:\n"
 
-      if @wrong_letters.empty?
-        puts "Missed letters: No missed letters yet."
-      else
-        puts "Missed letters: #{@wrong_letters}"
-      end
+      # if @wrong_letters.empty?
+      #   puts "Missed letters: No missed letters yet."
+      # else
+      #   puts "Missed letters: #{@wrong_letters}"
+      # end
 
       loop do
         @input = gets.chomp.downcase
@@ -112,16 +133,23 @@ class Game
 
       if (@wrong_letters.include?(input) || @right_letters.include?(input)) 
         puts "You alredy tried that!!! Guess another letter"
-  
+        sleep 1.5
       elsif @secret_word.include?(input)
         @right_letters << input
         puts "Correct !"
+        sleep 1.5
+      
       else
         puts "You guessed wrong!"
         @wrong_letters << input
         @guesses += 1
-        display_hangedman
+        sleep 1.5
+      
       end
+      #sleep 1.5
+      print "\x1B[1;1H\x1B[2J"
+      game_ui
+      display_hangedman
 
       puts(@secret_word.chars.map { |c| @right_letters.include?(c) ? c : "_" }.join(" "))
  
