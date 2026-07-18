@@ -1,0 +1,14 @@
+{
+  "secret": "acceptable",
+  "right_letters": [
+    "a",
+    "p"
+  ],
+  "wrong_letters": [
+    "i",
+    "m",
+    "n",
+    "w"
+  ],
+  "guessed": 4
+}

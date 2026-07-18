@@ -5,4 +5,13 @@
 
 require_relative "lib/game"
 
-Game.new.start
+puts "Load saved game? (y/n)"
+
+choice = gets.chomp.downcase
+
+game = 
+  if choice == "y"
+    Game.new(load: true)
+  else
+    Game.new
+  end

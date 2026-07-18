@@ -1,16 +1,48 @@
+require "json"
+
 
 # This thing creates the word that will be used on the Hangman game
-
 class Game
-  
-    
-  def initialize
+
+  def initialize(load: false)
+    if load == true
+      load_save
+    else
+      new_game
+    end
+    start
+  end
+
+  def load_save
+    data = JSON.parse(File.read("./saves/savefile.json"))
+
+    @secret_word = data["secret"]
+    @right_letters = data["right_letters"]
+    @wrong_letters = data["wrong_letters"]
+    @guesses = data["guessed"]
+    @input = ""
+  end
+
+  def new_game
     @secret_word = create_secret_word
-    # @secret_word
     @right_letters = []
     @wrong_letters = []
     @guesses = 0
-    #@guesses_left = 6
+    @input = ""
+  end
+
+  def savegame
+
+    player_data = {
+      secret: @secret_word,
+      right_letters: @right_letters,
+      wrong_letters: @wrong_letters,
+      guessed: @guesses
+    }
+
+    # Convert the hash to a JSON string and save it
+    File.write("./saves/savefile.json", JSON.pretty_generate(player_data))
+
   end
   
   def create_secret_word
@@ -23,7 +55,6 @@ class Game
   
   def display_word
     puts "The Word is: #{@secret_word.chars.map { |c| '_' }.join(' ')} "
-    #puts @secret_word.chars.map { |c| "_" }.join(" ")
   end
 
   def display_hangedman
@@ -41,14 +72,12 @@ class Game
   end
 
   def start
-
+   
     display_hangedman
     display_word
-    input = ""
 
     while @guesses < 6
-
-      puts "Guess a letter: \n"
+      puts "Type any letter to make a guess\n'$' to save the game or !' to quit \n"
 
       if @wrong_letters.empty?
         puts "Missed letters: No missed letters yet."
@@ -57,19 +86,36 @@ class Game
       end
 
       loop do
-        input = gets.chomp.downcase
-        break if valid_input?(input)
+        @input = gets.chomp.downcase
+        break if valid_input?(@input)
 
-        puts "Invalid input! Type only one letter"
+        puts "Invalid @input! Type only one letter"
       end
 
-      if @wrong_letters.include?(input) || @right_letters.include?(input)
+      if @input == "$"
+        savegame
+        puts "Game saved!"
+        next
+      elsif @input == "!"
+        quit_game
+      else
+        process_guess(@input)
+      end
+    end
+  end
+
+  def valid_input?(input)
+    input.length == 1 && @input.match?(/[[:alpha:][$][!]]/)
+  end
+
+  def process_guess(input)
+
+      if (@wrong_letters.include?(input) || @right_letters.include?(input)) 
         puts "You alredy tried that!!! Guess another letter"
-      
+  
       elsif @secret_word.include?(input)
         @right_letters << input
         puts "Correct !"
-     
       else
         puts "You guessed wrong!"
         @wrong_letters << input
@@ -82,26 +128,33 @@ class Game
       if @secret_word.chars.uniq.all? { |c| @right_letters.include?(c) }
         puts "Congratulations you've guessed everything right!"
         sleep 1.5
-        exit
+        restart
       end
 
       if @guesses == 6
         puts "You were Hanged (x_x) - GAME OVER!!!! "
         sleep 1.5
-        puts "The secret word was #{@secret_word}"
-        exit
+        puts "The secret word was #{@secret_word}\n"
+        restart
       end
+
+  end
+
+  def quit_game
+    puts "Until next time!!"
+    sleep 1.5
+    exit
+  end
+
+  def restart
+    puts "Play Again ? (y/n)"
+    input = gets.chomp.downcase
+    if input == "y"
+      new_game
+      print "\x1B[1;1H\x1B[2J"
+      start
+    else
+     quit_game
     end
   end
-
-  def valid_input?(input)
-    input.length == 1 && input.match?(/[[:alpha:]]/)
-  end
-
 end
-
-# Game.new.display_hangedman
-# Game.new.display_word
-#Game.new.start
-
-
