@@ -54,7 +54,7 @@ class Game
   end
   
   def display_word
-    puts "The Word is: #{@secret_word.chars.map { |c| '_' }.join(' ')} "
+    puts "The Word is: #{@secret_word.chars.map { |c| @right_letters.include?(c) ? c : "_" }.join(" ")} "
   end
 
   def display_hangedman
@@ -100,12 +100,6 @@ class Game
     while @guesses < 6
       puts "Type any letter to make a guess:\n"
 
-      # if @wrong_letters.empty?
-      #   puts "Missed letters: No missed letters yet."
-      # else
-      #   puts "Missed letters: #{@wrong_letters}"
-      # end
-
       loop do
         @input = gets.chomp.downcase
         break if valid_input?(@input)
@@ -150,8 +144,7 @@ class Game
       print "\x1B[1;1H\x1B[2J"
       game_ui
       display_hangedman
-
-      puts(@secret_word.chars.map { |c| @right_letters.include?(c) ? c : "_" }.join(" "))
+      display_word
  
       if @secret_word.chars.uniq.all? { |c| @right_letters.include?(c) }
         puts "Congratulations you've guessed everything right!"

@@ -1,14 +1,12 @@
 {
-  "secret": "acceptable",
+  "secret": "expertise",
   "right_letters": [
-    "a",
-    "p"
+    "e"
   ],
   "wrong_letters": [
-    "i",
-    "m",
     "n",
-    "w"
+    "m",
+    "b"
   ],
-  "guessed": 4
+  "guessed": 3
 }
